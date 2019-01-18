@@ -1,0 +1,50 @@
+#! /bin/sh
+
+# Parameters
+VW_WORKSPACE=verilator-wrapper-workspace
+SIM_MAIN_CPP=_verilator-wrapper-main.cpp
+
+# Fetch arguments
+# The first argument should be the top level module name,
+# others verilog and c++ file to be compiled.
+MODULE_NAME=$1
+shift
+SRC=$*
+
+# Create working directory
+rm -rf $VW_WORKSPACE
+mkdir $VW_WORKSPACE
+
+# Copy source files to the working directory
+for FILE in $SRC
+do
+    cp $FILE $VW_WORKSPACE
+done
+
+# Go to workspace
+cd $VW_WORKSPACE
+
+# Create the top simulation C++ file.
+cat <<EOF > $SIM_MAIN_CPP
+#include "V$MODULE_NAME.h"
+#include "verilated.h"
+
+int main(int argc, char** argv, char** env) {
+    Verilated::commandArgs(argc, argv);
+    V$MODULE_NAME* top = new V$MODULE_NAME;
+    while (!Verilated::gotFinish()) { top->eval(); }
+    delete top;
+    exit(0);
+} 
+EOF
+
+# Generate C++ files to be compiled to an executable
+# using verilator.
+verilator -Wall --cc $SRC --exe $SIM_MAIN_CPP
+
+# Compile the generated C++ code. Suppress the printouts. 
+make -j -C obj_dir -f V$MODULE_NAME.mk V$MODULE_NAME >/dev/null 2>&1
+
+# Move the executable to the top directory
+cp obj_dir/V$MODULE_NAME ../
+
