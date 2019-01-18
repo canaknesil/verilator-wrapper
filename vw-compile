@@ -1,8 +1,8 @@
 #! /bin/sh
 
 # Parameters
-VW_WORKSPACE=verilator-wrapper-workspace
-SIM_MAIN_CPP=_verilator-wrapper-main.cpp
+VW_WORKSPACE=__verilator-wrapper-workspace
+SIM_MAIN_CPP=__verilator-wrapper-main.cpp
 
 # Fetch arguments
 # The first argument should be the top level module name,
