@@ -40,7 +40,7 @@ EOF
 
 # Generate C++ files to be compiled to an executable
 # using verilator.
-verilator -Wall --cc $SRC --exe $SIM_MAIN_CPP
+verilator -Wall --cc +1800-2012ext+sv $SRC --exe $SIM_MAIN_CPP
 
 # Compile the generated C++ code. Suppress the printouts. 
 make -j -C obj_dir -f V$MODULE_NAME.mk V$MODULE_NAME >/dev/null 2>&1
